@@ -1,0 +1,33 @@
+name: Validate list
+
+on:
+  pull_request:
+  push:
+    branches:
+      - master
+      - main
+  schedule:
+    - cron: "17 6 * * 1"
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  quality:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - name: Validate Markdown structure
+        run: |
+          node scripts/validate.mjs --self-test
+          node scripts/validate.mjs
+      - uses: lycheeverse/lychee-action@v2
+        with:
+          args: >-
+            --no-progress
+            --exclude-mail
+            README.md
+            GUIDE.md
+            CONTRIBUTING.md
+          fail: true
